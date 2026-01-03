@@ -3,8 +3,8 @@
 export const APP_CONFIG = {
     // App Identity
     name: {
-        english: "Gunaso",
-        nepali: "गुनासो",
+        english: "JanGunaso",
+        nepali: "जनगुनासो",
     },
     tagline: "Report. Track. Resolve.",
     version: "1.0.0",
@@ -111,16 +111,17 @@ export const APP_CONFIG = {
 
     // Contact & Social
     contact: {
-        email: "support@gunaso.com",
-        phone: "+977-1-4000000",
+        email: "082bei020.dayakrishn@pcampus.edu.np",
+        phone: "+977-9800000000",
     },
 
     // Map
     map: {
         defaultCenter: {
-            lat: 27.7172,
-            lng: 85.324,
+            lat: 27.681946176197023,
+            lng: 85.31954622573116,
         },
+
         defaultZoom: 13,
         nearbyRadius: 1, // km
         markerClusterRadius: 50,
@@ -129,7 +130,7 @@ export const APP_CONFIG = {
 
     // Feature Flags
     features: {
-        enableNotifications: true,
+        enableNotifications: false,
         enableVoiceInput: false,
         enableAI: false,
         enableHeatmap: true,

@@ -311,7 +311,7 @@ const ComplaintDetail = () => {
                   ✓ You can verify this now! Original reporter's verification
                   will mark it as complete.
                 </p>
-              )}{" "}
+              )}
           </div>
         </div>
       )}
@@ -492,15 +492,19 @@ const ComplaintDetail = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Map */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div
+            className="bg-white rounded-xl shadow-lg overflow-hidden"
+            style={{ position: "relative", zIndex: 1 }}
+          >
             <div className="p-4 bg-gray-50 border-b border-gray-200">
               <h2 className="text-lg font-bold text-gray-900">Location</h2>
             </div>
-            <div className="h-64">
+            <div className="h-64" style={{ position: "relative", zIndex: 1 }}>
               <MapContainer
                 center={[complaint.location.lat, complaint.location.lng]}
                 zoom={15}
-                style={{ height: "100%", width: "100%" }}
+                style={{ height: "100%", width: "100%", zIndex: 1 }}
+                zoomControl={true}
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker
@@ -641,11 +645,21 @@ const ComplaintDetail = () => {
         </div>
       </div>
 
-      {/* Verify Modal */}
+      {/* Verify Modal - Fixed z-index and backdrop */}
       {showVerifyModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+        <div
+          className="fixed inset-0 flex items-center justify-center p-4"
+          style={{ zIndex: 9999 }}
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"
+            onClick={() => setShowVerifyModal(false)}
+          />
+
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Verify Resolution
             </h2>
             {isOriginalReporter && (
@@ -653,7 +667,7 @@ const ComplaintDetail = () => {
                 ℹ️ As the original reporter, your verification is important
               </div>
             )}
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-6">
               Has this issue been resolved satisfactorily?
             </p>
 
@@ -663,25 +677,25 @@ const ComplaintDetail = () => {
                   onClick={() =>
                     setVerifyForm({ ...verifyForm, isResolved: true })
                   }
-                  className={`flex-1 p-3 rounded-lg border-2 font-semibold transition ${
+                  className={`flex-1 p-4 rounded-xl border-2 font-semibold transition-all ${
                     verifyForm.isResolved
-                      ? "bg-green-500 border-green-500 text-white"
-                      : "border-gray-300 text-gray-700 hover:border-green-500"
+                      ? "bg-green-500 border-green-500 text-white shadow-lg scale-105"
+                      : "border-gray-300 text-gray-700 hover:border-green-500 hover:bg-green-50"
                   }`}
                 >
-                  Yes, Resolved
+                  ✓ Yes, Resolved
                 </button>
                 <button
                   onClick={() =>
                     setVerifyForm({ ...verifyForm, isResolved: false })
                   }
-                  className={`flex-1 p-3 rounded-lg border-2 font-semibold transition ${
+                  className={`flex-1 p-4 rounded-xl border-2 font-semibold transition-all ${
                     !verifyForm.isResolved
-                      ? "bg-red-500 border-red-500 text-white"
-                      : "border-gray-300 text-gray-700 hover:border-red-500"
+                      ? "bg-red-500 border-red-500 text-white shadow-lg scale-105"
+                      : "border-gray-300 text-gray-700 hover:border-red-500 hover:bg-red-50"
                   }`}
                 >
-                  No, Not Resolved
+                  ✗ No, Not Resolved
                 </button>
               </div>
 
@@ -691,8 +705,8 @@ const ComplaintDetail = () => {
                   setVerifyForm({ ...verifyForm, comment: e.target.value })
                 }
                 placeholder="Add a comment (optional)"
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={4}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
             </div>
 
@@ -700,17 +714,24 @@ const ComplaintDetail = () => {
               <button
                 onClick={() => setShowVerifyModal(false)}
                 disabled={submittingVerification}
-                className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleVerificationSubmit}
                 disabled={submittingVerification}
-                className="flex-1 px-4 py-3 text-white rounded-lg font-semibold transition disabled:opacity-50"
+                className="flex-1 px-4 py-3 text-white rounded-xl font-semibold transition disabled:opacity-50 shadow-lg hover:shadow-xl"
                 style={{ backgroundColor: APP_CONFIG.colors.primary }}
               >
-                {submittingVerification ? "Submitting..." : "Submit"}
+                {submittingVerification ? (
+                  <span className="flex items-center justify-center">
+                    <Loader className="animate-spin mr-2" size={18} />
+                    Submitting...
+                  </span>
+                ) : (
+                  "Submit Verification"
+                )}
               </button>
             </div>
           </div>

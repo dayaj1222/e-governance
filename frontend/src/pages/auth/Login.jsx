@@ -185,7 +185,7 @@ const Login = () => {
         {/* Demo Accounts - Prominent */}
         <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
           <p className="text-sm font-semibold text-blue-900 mb-3 text-center">
-            🚀 Quick Demo Access
+            Quick Demo Access
           </p>
           <div className="grid grid-cols-2 gap-3">
             <button
