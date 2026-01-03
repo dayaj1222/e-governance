@@ -228,7 +228,7 @@ export default function About() {
                   </p>
                 </div>
                 <a
-                  href="https://github.com/yourusername/egovernance-platform"
+                  href="https://github.com/dayaj1222/e-governance"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity"

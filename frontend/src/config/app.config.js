@@ -1,5 +1,4 @@
 // src/config/app.config.js
-
 export const APP_CONFIG = {
     // App Identity
     name: {
@@ -9,9 +8,9 @@ export const APP_CONFIG = {
     tagline: "Report. Track. Resolve.",
     version: "1.0.0",
 
-    // API Configuration
+    // API Configuration - Use environment variable or default to relative path
     api: {
-        baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+        baseURL: import.meta.env.VITE_API_URL || "/api",
         timeout: 10000,
     },
 
@@ -57,19 +56,20 @@ export const APP_CONFIG = {
     statuses: [
         { value: "pending", label: "Pending" },
         { value: "in-progress", label: "In Progress" },
-        { value: "solved", label: "Pending Verification" }, // Updated label
+        { value: "solved", label: "Pending Verification" },
         { value: "verified", label: "Verified" },
     ],
 
     // Map Configuration
     map: {
         defaultCenter: {
-            lat: 27.7172,
-            lng: 85.324,
+            lat: 27.681946176197023,
+            lng: 85.31954622573116,
         },
         defaultZoom: 13,
         nearbyRadius: 1, // km
         markerClusterRadius: 50,
+        mapboxToken: import.meta.env.VITE_MAPBOX_TOKEN,
     },
 
     // File Upload
@@ -112,19 +112,6 @@ export const APP_CONFIG = {
     contact: {
         email: "082bei020.dayakrishn@pcampus.edu.np",
         phone: "+977-9800000000",
-    },
-
-    // Map
-    map: {
-        defaultCenter: {
-            lat: 27.681946176197023,
-            lng: 85.31954622573116,
-        },
-
-        defaultZoom: 13,
-        nearbyRadius: 1, // km
-        markerClusterRadius: 50,
-        mapboxToken: import.meta.env.VITE_MAPBOX_TOKEN,
     },
 
     // Feature Flags

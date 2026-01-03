@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { complaintAPI, uploadAPI } from "../../utils/api";
 import { toast } from "react-toastify";
 import APP_CONFIG from "../../config/app.config";
 import Select from "react-select";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapPin, Upload, X, Loader, Navigation } from "lucide-react";
@@ -21,15 +21,25 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
+// Component to recenter map when location changes
+function RecenterMap({ center }) {
+  const map = useMap();
+  if (center) {
+    map.setView([center.lat, center.lng], APP_CONFIG.map.defaultZoom);
+  }
+  return null;
+}
+
 // Component to handle map clicks
 function LocationMarker({ position, setPosition }) {
-  useMapEvents({
-    click(e) {
-      setPosition({
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-      });
-    },
+  const map = useMap();
+
+  // Set up map click handler
+  map.on("click", (e) => {
+    setPosition({
+      lat: e.latlng.lat,
+      lng: e.latlng.lng,
+    });
   });
 
   return position ? <Marker position={[position.lat, position.lng]} /> : null;
@@ -104,15 +114,40 @@ const CreateComplaint = () => {
       toast.info("Getting your location...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
+          const newLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          };
+          setLocation(newLocation);
+          if (errors.location) {
+            setErrors({ ...errors, location: "" });
+          }
           toast.success("Location captured!");
         },
         (error) => {
           console.error("Error getting location:", error);
-          toast.error("Could not get your location. Please select on map.");
+          let errorMessage = "Could not get your location. ";
+
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += "Please allow location access in your browser.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "Location request timed out.";
+              break;
+            default:
+              errorMessage += "Please select location on map.";
+          }
+
+          toast.error(errorMessage);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         },
       );
     } else {
@@ -361,16 +396,17 @@ const CreateComplaint = () => {
               Use Current Location
             </button>
             {location && (
-              <p className="mt-2 text-sm text-gray-600">
-                Selected: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+              <p className="mt-2 text-sm text-green-600 font-semibold">
+                ✓ Location selected: {location.lat.toFixed(6)},{" "}
+                {location.lng.toFixed(6)}
               </p>
             )}
           </div>
           <div className="h-[400px] rounded-lg overflow-hidden border-2 border-gray-300">
             <MapContainer
               center={[
-                location?.lat || APP_CONFIG.map.defaultCenter.lat,
-                location?.lng || APP_CONFIG.map.defaultCenter.lng,
+                APP_CONFIG.map.defaultCenter.lat,
+                APP_CONFIG.map.defaultCenter.lng,
               ]}
               zoom={APP_CONFIG.map.defaultZoom}
               style={{ height: "100%", width: "100%" }}
@@ -379,11 +415,12 @@ const CreateComplaint = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; OpenStreetMap contributors"
               />
+              <RecenterMap center={location} />
               <LocationMarker position={location} setPosition={setLocation} />
             </MapContainer>
           </div>
           <p className="mt-2 text-sm text-gray-500">
-            Click on the map to select location
+            Click on the map to select location or use the button above
           </p>
           {errors.location && (
             <p className="mt-1 text-sm text-red-600">{errors.location}</p>
